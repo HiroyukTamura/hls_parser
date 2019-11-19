@@ -98,7 +98,7 @@ class Variant {
   }
 
   final uri;
-  final bool isIFrameOnly;
+  bool isIFrameOnly;
   final bandwidth;
   final averageBandwidth;
   final codecs;
@@ -108,7 +108,7 @@ class Variant {
   final List audio;
   final List video;
   final List subtitles;
-  final List closedCaptions;
+  final List<String> closedCaptions;
   final currentRenditions;
 }
 

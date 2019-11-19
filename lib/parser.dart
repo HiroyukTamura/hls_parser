@@ -1,4 +1,5 @@
 import 'package:convert/convert.dart';
+import 'package:hls_parser/data.dart';
 import 'package:tuple/tuple.dart';
 import 'util.dart';
 import 'exception.dart';
@@ -94,7 +95,7 @@ class Parser {
 
   parseAttributeList(param) {
     List<String> list = Util.splitByCommaWithPreservingQuotes(param);
-    const attributes = {};//todo fix
+    const attributes = {}; //todo fix
     list.forEach((item) {
       Tuple2<String, String> tuple2 = Util.splitAt(
           str: item, delimiterChar: '=');
@@ -182,5 +183,111 @@ class Parser {
       default:
         return [param, null]; // Unknown tag
     }
+  }
+
+  Tuple2<String, String> splitTag(String line) {
+    int index = line.indexOf(':');
+    return index == -1
+        ? Tuple2<String, String>(line.substring(1).trim(), null)
+        : Tuple2<String, String>(
+        line.substring(1, index).trim(), line.substring(index + 1).trim());
+  }
+
+//  function parseRendition({attributes}) {
+//    const rendition = new Rendition({
+//      type: attributes['TYPE'],
+//      uri: attributes['URI'],
+//      groupId: attributes['GROUP-ID'],
+//      language: attributes['LANGUAGE'],
+//      assocLanguage: attributes['ASSOC-LANGUAGE'],
+//      name: attributes['NAME'],
+//      isDefault: attributes['DEFAULT'],
+//      autoselect: attributes['AUTOSELECT'],
+//      forced: attributes['FORCED'],
+//      instreamId: attributes['INSTREAM-ID'],
+//      characteristics: attributes['CHARACTERISTICS'],
+//      channels: attributes['CHANNELS']
+//    });
+//    return rendition;
+//  }
+
+  String checkRedundantRendition(List<Rendition> renditions,
+      Rendition rendition) {
+    bool defaultFound = false;
+    for (Rendition item in renditions) {
+      if (item.name == rendition.name) {
+        return 'All EXT-X-MEDIA tags in the same Group MUST have different NAME attributes.';
+      }
+      if (item.isDefault) {
+        defaultFound = true;
+      }
+    }
+    if (defaultFound && rendition.isDefault) {
+      return 'EXT-X-MEDIA A Group MUST NOT have more than one member with a DEFAULT attribute of YES.';
+    }
+    return null;
+  }
+
+  addRendition(variant, line, type) {
+    Rendition rendition = parseRendition(line);
+    List<Rendition> renditions = variant[Util.camelify(type)];
+    String errorMessage = checkRedundantRendition(renditions, rendition);
+    if (errorMessage != null) {
+      throw InvalidPlaylistException(errorMessage);
+    }
+    renditions.add(rendition);
+    if (rendition.isDefault) {
+      variant.currentRenditions[Util.camelify(type)] = renditions.length - 1;
+    }
+  }
+
+  void matchTypes(attrs, variant, params) {
+    List<String> typeList = ['AUDIO', 'VIDEO', 'SUBTITLES', 'CLOSED-CAPTIONS'];
+    typeList.forEach((String type) {
+      if (type == 'CLOSED-CAPTIONS' && attrs[type] == 'NONE') {
+        params.isClosedCaptionsNone = true;
+        variant.closedCaptions = [];
+      } else if (attrs[type] &&
+          !variant[Util.camelify(type)].find((item) => item.groupId ==
+              attrs[type])) {
+        InvalidPlaylistException(
+            '$type attribute MUST match the value of the GROUP-ID attribute of an EXT-X-MEDIA tag whose TYPE attribute is $type.');
+      }
+    });
+  }
+
+  parseVariant(List lines, variantAttrs, uri, iFrameOnly, params) {
+    Variant variant = Variant.build(
+      uri: uri,
+      bandwidth: variantAttrs['BANDWIDTH'],
+      averageBandwidth: variantAttrs['AVERAGE-BANDWIDTH'],
+      codecs: variantAttrs['CODECS'],
+      resolution: variantAttrs['RESOLUTION'],
+      frameRate: variantAttrs['FRAME-RATE'],
+      hdcpLevel: variantAttrs['HDCP-LEVEL']
+    );
+    for (var line in lines) {
+      if (line.name == 'EXT-X-MEDIA') {
+        const renditionAttrs = line.attributes;
+        const renditionType = renditionAttrs['TYPE'];
+        if (!renditionType || !renditionAttrs['GROUP-ID']) {
+          throw InvalidPlaylistException('EXT-X-MEDIA TYPE attribute is REQUIRED.');
+        }
+        if (variantAttrs[renditionType] == renditionAttrs['GROUP-ID']) {
+          addRendition(variant, line, renditionType);
+          if (renditionType == 'CLOSED-CAPTIONS') {
+            for (String instreamId in variant.closedCaptions) {
+              if (instreamId?.startsWith('SERVICE') == true && params.compatibleVersion < 7) {
+                params.compatibleVersion = 7;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    matchTypes(variantAttrs, variant, params);
+    variant.isIFrameOnly = iFrameOnly;
+    return variant;
   }
 }

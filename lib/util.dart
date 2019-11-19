@@ -65,4 +65,23 @@ class Util {
     list.add(str.substring(start).trim());
     return list;
   }
+
+  static String camelify(String str) {
+    return str.replaceFirstMapped('/\-([a-z0-9]{1})/g', (it) => it.toString().toUpperCase());
+//    List<String> array = [];
+//    bool nextUpper = false;
+//    for (String ch in str.split('')) {
+//      if (ch == '-' || ch == '_') {
+//        nextUpper = true;
+//        continue;
+//      }
+//      if (nextUpper) {
+//        array.add(ch.toUpperCase());
+//        nextUpper = false;
+//        continue;
+//      }
+//      array.add(ch.toLowerCase());
+//    }
+//    return array.join('');
+  }
 }

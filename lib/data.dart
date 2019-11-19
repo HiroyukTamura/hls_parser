@@ -133,3 +133,26 @@ class SessionData {
   final uri;
   final language;
 }
+
+
+class Key {
+  Key({
+    @required this.method, // required
+    @required this.uri, // required unless method=NONE
+    this.iv,
+    this.format,
+    this.formatVersion
+  }) {
+    assert(method != null);
+    if (method != 'NONE') {
+      assert (uri != null);
+      assert (!(uri != null || iv != null  || format != null  || formatVersion != null));
+    }
+  }
+
+  final method;
+  final uri;
+  final iv;
+  final format;
+  final formatVersion;
+}

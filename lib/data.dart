@@ -59,11 +59,12 @@ class Variant {
     this.subtitles,
     this.closedCaptions,
     this.currentRenditions,
-  }) :
-    assert (uri != true),
-    assert (bandwidth != true);
+  })
+      :
+        assert (uri != true),
+        assert (bandwidth != true);
 
-  
+
   factory Variant.build({
     @required uri, // required
     isIFrameOnly = false,
@@ -85,22 +86,22 @@ class Variant {
     closedCaptions ??= [];
 
     return Variant._(
-      uri: uri,
-      isIFrameOnly: isIFrameOnly,
-      bandwidth: bandwidth,
-      averageBandwidth: averageBandwidth,
-      codecs: codecs,
-      resolution: resolution,
-      frameRate: frameRate,
-      hdcpLevel: hdcpLevel,
-      audio: audio,
-      video: video,
-      subtitles: subtitles,
-      closedCaptions: closedCaptions,
-      currentRenditions: currentRenditions
+        uri: uri,
+        isIFrameOnly: isIFrameOnly,
+        bandwidth: bandwidth,
+        averageBandwidth: averageBandwidth,
+        codecs: codecs,
+        resolution: resolution,
+        frameRate: frameRate,
+        hdcpLevel: hdcpLevel,
+        audio: audio,
+        video: video,
+        subtitles: subtitles,
+        closedCaptions: closedCaptions,
+        currentRenditions: currentRenditions
     );
   }
-  
+
   final uri;
   final bool isIFrameOnly;
   final bandwidth;
@@ -125,7 +126,8 @@ class SessionData {
   }) {
     assert (id != null);
     assert (value != null || uri != null);
-    assert (!(value != null && uri != null), 'SessionData cannot have both value and uri, shoud be either.');
+    assert (!(value != null && uri !=
+        null), 'SessionData cannot have both value and uri, shoud be either.');
   }
 
   final id;
@@ -146,7 +148,8 @@ class Key {
     assert(method != null);
     if (method != 'NONE') {
       assert (uri != null);
-      assert (!(uri != null || iv != null  || format != null  || formatVersion != null));
+      assert (!(uri != null || iv != null || format != null ||
+          formatVersion != null));
     }
   }
 
@@ -159,7 +162,7 @@ class Key {
 
 
 class MediaInitializationSection {
-  constructor({
+  MediaInitializationSection({
     @required this.uri, // required
     this.mimeType,
     this.byterange
@@ -170,4 +173,55 @@ class MediaInitializationSection {
   final uri;
   final mimeType;
   final byterange;
+}
+
+class DateRange {
+  DateRange._({
+    @required this.id,
+    this.classId, // required if endOnNext is true
+    @required this.start,
+    this.end,
+    this.duration,
+    this.plannedDuration,
+    this.endOnNext,
+    this.attributes
+  }) {
+    assert(id != null);
+    assert(start != null);
+    if (endOnNext) {
+      assert (classId != null);
+    }
+    if (end != null) {
+      assert (start <= end);
+    }
+    assert (duration != null) {
+      assert (duration >= 0);
+    }
+    if (plannedDuration != null) {
+      assert (plannedDuration >= 0);
+    }
+  }
+
+  factory DateRange.build({
+    @required id, classId, start, end, duration, plannedDuration, endOnNext, attribute,
+  }) {
+    return DateRange._(
+      id: id,
+      classId: classId,
+      start: start,
+      end: end,
+      duration: duration,
+      plannedDuration: plannedDuration,
+      endOnNext: endOnNext,
+      attributes: attribute,);
+  }
+
+  final id;
+  final classId;
+  final start;
+  final end;
+  final duration;
+  final plannedDuration;
+  final bool endOnNext;
+  final attributes;
 }

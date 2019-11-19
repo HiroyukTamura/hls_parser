@@ -248,3 +248,11 @@ class SpliceInfo {
   final tagName;
   final value;
 }
+
+class Data {
+  Data(this.type) {
+    assert (type != null);
+  }
+
+  final type;
+}

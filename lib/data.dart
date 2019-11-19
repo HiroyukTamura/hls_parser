@@ -2,19 +2,20 @@ import 'package:meta/meta.dart';
 import 'util.dart';
 
 class Rendition {
-  Rendition(
-      {@required this.type,
-      this.uri,
-      @required this.groupId,
-      this.language,
-      this.assocLanguage,
-      @required this.name,
-      this.isDefault,
-      this.autoselect,
-      this.forced,
-      this.instreamId,
-      this.characteristics,
-      this.channels}) {
+  Rendition({
+    @required this.type,
+    this.uri,
+    @required this.groupId,
+    this.language,
+    this.assocLanguage,
+    @required this.name,
+    this.isDefault,
+    this.autoselect,
+    this.forced,
+    this.instreamId,
+    this.characteristics,
+    this.channels,
+  }) {
     Util.assertNonNull([type, groupId, name]);
     if (type == 'SUBTITLES') {
       assert(uri != null);
@@ -44,19 +45,20 @@ class Rendition {
 
 class Variant {
   Variant._({
-    this.uri, // required
-    this.isIFrameOnly,
-    this.bandwidth, // required
-    this.averageBandwidth,
-    this.codecs, // the spec states that CODECS is required but not true in the real world
-    this.resolution,
-    this.frameRate,
-    this.hdcpLevel,
-    this.audio,
-    this.video,
-    this.subtitles,
-    this.closedCaptions,
-    this.currentRenditions,
+    @required this.uri, // required
+    @required this.isIFrameOnly,
+    @required this.bandwidth, // required
+    @required this.averageBandwidth,
+    @required
+        this.codecs, // the spec states that CODECS is required but not true in the real world
+    @required this.resolution,
+    @required this.frameRate,
+    @required this.hdcpLevel,
+    @required this.audio,
+    @required this.video,
+    @required this.subtitles,
+    @required this.closedCaptions,
+    @required this.currentRenditions,
   })  : assert(uri != true),
         assert(bandwidth != true);
 
@@ -111,11 +113,12 @@ class Variant {
 }
 
 class SessionData {
-  SessionData(
-      {@required this.id, // required
-      this.value,
-      this.uri,
-      this.language}) {
+  SessionData({
+    @required this.id, // required
+    this.value,
+    this.uri,
+    this.language,
+  }) {
     assert(id != null);
     assert(value != null || uri != null);
     assert(!(value != null && uri != null),
@@ -129,12 +132,13 @@ class SessionData {
 }
 
 class Key {
-  Key(
-      {@required this.method, // required
-      @required this.uri, // required unless method=NONE
-      this.iv,
-      this.format,
-      this.formatVersion}) {
+  Key({
+    @required this.method, // required
+    @required this.uri, // required unless method=NONE
+    this.iv,
+    this.format,
+    this.formatVersion,
+  }) {
     assert(method != null);
     if (method != 'NONE') {
       assert(uri != null);
@@ -166,15 +170,16 @@ class MediaInitializationSection {
 }
 
 class DateRange {
-  DateRange._(
-      {@required this.id,
-      this.classId, // required if endOnNext is true
-      @required this.start,
-      this.end,
-      this.duration,
-      this.plannedDuration,
-      this.endOnNext,
-      this.attributes}) {
+  DateRange._({
+    @required this.id,
+    @required this.classId, // required if endOnNext is true
+    @required this.start,
+    @required this.end,
+    @required this.duration,
+    @required this.plannedDuration,
+    @required this.endOnNext,
+    @required this.attributes,
+  }) {
     assert(id != null);
     assert(start != null);
     if (endOnNext) {
@@ -224,11 +229,12 @@ class DateRange {
 }
 
 class SpliceInfo {
-  SpliceInfo(
-      {@required this.type, // required
-      this.duration, // required if the type is 'OUT'
-      this.tagName, // required if the type is 'RAW'
-      this.value}) {
+  SpliceInfo({
+    @required this.type, // required
+    this.duration, // required if the type is 'OUT'
+    this.tagName, // required if the type is 'RAW'
+    this.value,
+  }) {
     assert(type != null);
     if (type != 'OUT') {
       assert(duration != null);
@@ -273,7 +279,7 @@ class Playlist extends Data {
 
 class MasterPlaylist extends Playlist {
   MasterPlaylist._({
-    isMasterPlaylist,
+    @required isMasterPlaylist,
     @required this.variants,
     @required this.currentVariant,
     @required this.sessionDataList,
@@ -308,17 +314,17 @@ class MasterPlaylist extends Playlist {
 }
 
 class MediaPlaylist extends Playlist {
-  MediaPlaylist._(
-      {this.targetDuration,
-      this.mediaSequenceBase,
-      this.discontinuitySequenceBase,
-      this.endlist,
-      this.playlistType,
-      this.isIFramel,
-      this.segments,
-      this.hash,
-      isMasterPlaylist})
-      : super(isMasterPlaylist: isMasterPlaylist);//todo fix
+  MediaPlaylist._({
+    @required this.targetDuration,
+    @required this.mediaSequenceBase,
+    @required this.discontinuitySequenceBase,
+    @required this.endlist,
+    @required this.playlistType,
+    @required this.isIFramel,
+    @required this.segments,
+    @required this.hash,
+    @required isMasterPlaylist,
+  }) : super(isMasterPlaylist: isMasterPlaylist); //todo fix
 
   factory MediaPlaylist.build(
       {isMasterPlaylist = false,
@@ -353,4 +359,75 @@ class MediaPlaylist extends Playlist {
   final isIFramel;
   final List segments;
   final hash;
+}
+
+class Segment extends Data {
+  Segment._({
+    @required this.uri,
+    @required this.mimeType,
+    @required this.data,
+    @required this.duration,
+    @required this.title,
+    @required this.byterange,
+    @required this.discontinuity,
+    @required this.mediaSequenceNumber,
+    @required this.discontinuitySequence,
+    @required this.key,
+    @required this.map,
+    @required this.programDateTime,
+    @required this.dateRange,
+    @required this.markers,
+  }) : super('segment') {
+    Util.assertNonNull([uri, mediaSequenceNumber, discontinuitySequence]);
+  }
+
+  factory Segment.build({
+    @required uri,
+    mimeType,
+    data,
+    duration,
+    title,
+    byterange,
+    discontinuity,
+    @required mediaSequenceNumber,
+    @required discontinuitySequence,
+    key,
+    map,
+    programDateTime,
+    dateRange,
+    List markers,
+  }) {
+    markers ??= [];
+    return Segment._(
+      uri: uri,
+      mediaSequenceNumber: mediaSequenceNumber,
+      discontinuitySequence: discontinuitySequence,
+      byterange: byterange,
+      mimeType: mimeType,
+      duration: duration,
+      data: data,
+      title: title,
+      dateRange: dateRange,
+      discontinuity: discontinuity,
+      key: key,
+      map: map,
+      markers: markers,
+      programDateTime: programDateTime,
+    );
+  }
+
+  final uri;
+  final mimeType;
+  final data;
+  final duration;
+  final title;
+  final byterange;
+  final discontinuity;
+  final mediaSequenceNumber;
+  final discontinuitySequence;
+  final key;
+  final map;
+  final programDateTime;
+  final dateRange;
+  final List markers;
 }

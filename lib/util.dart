@@ -37,4 +37,32 @@ class Util {
 
   static String unquote(String val) =>
       val.replaceFirstMapped(_surroundQuotes, (m) => m[2]).trim();
+
+  static List<String> splitByCommaWithPreservingQuotes(String str) {
+    List<String> list = [];
+    bool doParse = true;
+    int start = 0;
+    List<String> prevQuotes = [];
+    for (int i = 0; i < str.length; i++) {
+      String curr = str.split('')[i];
+      if (doParse && curr == ',') {
+        list.add(str.substring(start, i).trim());
+        start = i + 1;
+        continue;
+      }
+      if (curr == '"' || curr == '\'') {
+        if (doParse) {
+          prevQuotes.add(curr);
+          doParse = false;
+        } else if (curr == prevQuotes[prevQuotes.length - 1]) {
+          prevQuotes.removeLast();
+          doParse = true;
+        } else {
+          prevQuotes.add(curr);
+        }
+      }
+    }
+    list.add(str.substring(start).trim());
+    return list;
+  }
 }

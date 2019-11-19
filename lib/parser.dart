@@ -79,4 +79,108 @@ class Parser {
     }
     return double.parse(str);
   }
+
+  void setCompatibleVersionOfKey(params, attributes) {
+    if (attributes['IV'] != null, && params.compatibleVersion < 2) {
+      params.compatibleVersion = 2;
+    }
+    if ((attributes['KEYFORMAT'] != null ||
+        attributes['KEYFORMATVERSIONS'] != null) &&
+        params.compatibleVersion < 5) {
+      params.compatibleVersion = 5;
+    }
+  }
+
+
+  parseAttributeList(param) {
+    List<String> list = Util.splitByCommaWithPreservingQuotes(param);
+    const attributes = {};//todo fix
+    list.forEach((item) {
+      Tuple2<String, String> tuple2 = Util.splitAt(
+          str: item, delimiterChar: '=');
+      String key = tuple2.item1;
+      String value = tuple2.item2;
+      String val = Util.unquote(value);
+      switch (key) {
+        case 'URI':
+          attributes[key] = val;
+          break;
+        case 'START-DATE':
+        case 'END-DATE':
+          attributes[key] = DateTime.parse(val);
+          break;
+        case 'IV':
+          attributes[key] = parseIV(val);
+          break;
+        case 'BYTERANGE':
+          attributes[key] = parseBYTERANGE(val);
+          break;
+        case 'RESOLUTION':
+          attributes[key] = parseResolution(val);
+          break;
+        case 'END-ON-NEXT':
+        case 'DEFAULT':
+        case 'AUTOSELECT':
+        case 'FORCED':
+        case 'PRECISE':
+          attributes[key] = val == 'YES';
+          break;
+        case 'DURATION':
+        case 'PLANNED-DURATION':
+        case 'BANDWIDTH':
+        case 'AVERAGE-BANDWIDTH':
+        case 'FRAME-RATE':
+        case 'TIME-OFFSET':
+          attributes[key] = double.parse(val);
+          break;
+        default:
+          if (key.startsWith('SCTE35-')) {
+            attributes[key] = hex.decode(val);
+          } else if (key.startsWith('X-')) {
+            attributes[key] = parseUserAttribute(value);
+          } else {
+            attributes[key] = val;
+          }
+      }
+    });
+    return attributes;
+  }
+
+  String parseTagParam(name, param) {
+    switch (name) {
+      case 'EXTM3U':
+      case 'EXT-X-DISCONTINUITY':
+      case 'EXT-X-ENDLIST':
+      case 'EXT-X-I-FRAMES-ONLY':
+      case 'EXT-X-INDEPENDENT-SEGMENTS':
+      case 'EXT-X-CUE-IN':
+        return [null, null];
+      case 'EXT-X-VERSION':
+      case 'EXT-X-TARGETDURATION':
+      case 'EXT-X-MEDIA-SEQUENCE':
+      case 'EXT-X-DISCONTINUITY-SEQUENCE':
+      case 'EXT-X-CUE-OUT':
+        return [double.parse(param), null];
+      case 'EXT-X-KEY':
+      case 'EXT-X-MAP':
+      case 'EXT-X-DATERANGE':
+      case 'EXT-X-MEDIA':
+      case 'EXT-X-STREAM-INF':
+      case 'EXT-X-I-FRAME-STREAM-INF':
+      case 'EXT-X-SESSION-DATA':
+      case 'EXT-X-SESSION-KEY':
+      case 'EXT-X-START':
+        return [null, parseAttributeList(param)];
+      case 'EXTINF':
+        return [parseEXTINF(param), null];
+      case 'EXT-X-BYTERANGE':
+        return [parseBYTERANGE(param), null];
+      case 'EXT-X-PROGRAM-DATE-TIME':
+        return [DateTime.parse(param), null];
+      case 'EXT-X-PLAYLIST-TYPE':
+        return [param, null]; // <EVENT|VOD>
+      default:
+        return [param, null]; // Unknown tag
+    }
+  }
 }

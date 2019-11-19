@@ -194,7 +194,7 @@ class DateRange {
     if (end != null) {
       assert (start <= end);
     }
-    assert (duration != null) {
+    if (duration != null) {
       assert (duration >= 0);
     }
     if (plannedDuration != null) {
@@ -224,4 +224,27 @@ class DateRange {
   final plannedDuration;
   final bool endOnNext;
   final attributes;
+}
+
+
+class SpliceInfo {
+  SpliceInfo({
+    @required this.type, // required
+    this.duration, // required if the type is 'OUT'
+    this.tagName, // required if the type is 'RAW'
+    this.value
+  }) {
+    assert (type != null);
+    if (type != 'OUT') {
+      assert (duration != null);
+    }
+    if (type == 'RAW') {
+      assert (tagName != null);
+    }
+  }
+
+  final type;
+  final duration;
+  final tagName;
+  final value;
 }

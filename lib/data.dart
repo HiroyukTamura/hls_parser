@@ -156,3 +156,18 @@ class Key {
   final format;
   final formatVersion;
 }
+
+
+class MediaInitializationSection {
+  constructor({
+    @required this.uri, // required
+    this.mimeType,
+    this.byterange
+  }) {
+    assert (uri != null);
+  }
+
+  final uri;
+  final mimeType;
+  final byterange;
+}

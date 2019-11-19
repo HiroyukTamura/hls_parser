@@ -42,3 +42,76 @@ class Rendition {
   final characteristics;
   final channels;
 }
+
+class Variant {
+
+  Variant._({
+    this.uri, // required
+    this.isIFrameOnly,
+    this.bandwidth, // required
+    this.averageBandwidth,
+    this.codecs, // the spec states that CODECS is required but not true in the real world
+    this.resolution,
+    this.frameRate,
+    this.hdcpLevel,
+    this.audio,
+    this.video,
+    this.subtitles,
+    this.closedCaptions,
+    this.currentRenditions,
+  }) :
+    assert (uri != true),
+    assert (bandwidth != true);
+
+  
+  factory Variant.build({
+    @required uri, // required
+    isIFrameOnly = false,
+    @required bandwidth, // required
+    averageBandwidth,
+    codecs, // the spec states that CODECS is required but not true in the real world
+    resolution,
+    frameRate,
+    hdcpLevel,
+    List audio,
+    List video,
+    List subtitles,
+    List closedCaptions,
+    List currentRenditions
+  }) {
+    audio ??= [];
+    video ??= [];
+    subtitles ??= [];
+    closedCaptions ??= [];
+
+    return Variant._(
+      uri: uri,
+      isIFrameOnly: isIFrameOnly,
+      bandwidth: bandwidth,
+      averageBandwidth: averageBandwidth,
+      codecs: codecs,
+      resolution: resolution,
+      frameRate: frameRate,
+      hdcpLevel: hdcpLevel,
+      audio: audio,
+      video: video,
+      subtitles: subtitles,
+      closedCaptions: closedCaptions,
+      currentRenditions: currentRenditions
+    );
+  }
+  
+  final uri;
+  final bool isIFrameOnly;
+  final bandwidth;
+  final averageBandwidth;
+  final codecs;
+  final resolution;
+  final frameRate;
+  final hdcpLevel;
+  final List audio;
+  final List video;
+  final List subtitles;
+  final List closedCaptions;
+  final currentRenditions;
+}

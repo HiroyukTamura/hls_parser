@@ -253,14 +253,14 @@ class Data {
 }
 
 class Playlist extends Data {
-  Playlist(
-      {@required this.isMasterPlaylist, // required
-      this.uri,
-      this.version,
-      this.independentSegments = false,
-      this.start,
-      this.source})
-      : assert(isMasterPlaylist != null),
+  Playlist({
+    @required this.isMasterPlaylist,
+    this.uri,
+    this.version,
+    this.independentSegments = false,
+    this.start,
+    this.source,
+  })  : assert(isMasterPlaylist != null),
         super('playlist');
 
   final isMasterPlaylist;
@@ -272,20 +272,85 @@ class Playlist extends Data {
 }
 
 class MasterPlaylist extends Playlist {
-  MasterPlaylist({
+  MasterPlaylist._({
     isMasterPlaylist,
     @required this.variants,
     @required this.currentVariant,
     @required this.sessionDataList,
     @required this.sessionKeyList,
   })  : assert(variants != null),
-        assert(currentVariant != null),
         assert(sessionDataList != null),
         assert(sessionKeyList != null),
-        super(isMasterPlaylist: isMasterPlaylist);
+        super(isMasterPlaylist: isMasterPlaylist); //todo fix
+
+  factory MasterPlaylist.build({
+    bool isMasterPlaylist = true,
+    variants,
+    currentVariant,
+    sessionDataList,
+    sessionKeyList,
+  }) {
+    variants ??= [];
+    sessionDataList ??= [];
+    sessionKeyList ??= [];
+    return MasterPlaylist._(
+        isMasterPlaylist: isMasterPlaylist,
+        variants: variants,
+        currentVariant: currentVariant,
+        sessionDataList: sessionDataList,
+        sessionKeyList: sessionKeyList);
+  }
 
   final variants;
   final currentVariant;
   final sessionDataList;
   final sessionKeyList;
+}
+
+class MediaPlaylist extends Playlist {
+  MediaPlaylist._(
+      {this.targetDuration,
+      this.mediaSequenceBase,
+      this.discontinuitySequenceBase,
+      this.endlist,
+      this.playlistType,
+      this.isIFramel,
+      this.segments,
+      this.hash,
+      isMasterPlaylist})
+      : super(isMasterPlaylist: isMasterPlaylist);//todo fix
+
+  factory MediaPlaylist.build(
+      {isMasterPlaylist = false,
+      targetDuration,
+      mediaSequenceBase = 0,
+      discontinuitySequenceBase = 0,
+      endList,
+      playlistType,
+      isIFramel,
+      segments,
+      hash}) {
+    segments ??= [];
+
+    return MediaPlaylist._(
+      targetDuration: targetDuration,
+      mediaSequenceBase: mediaSequenceBase,
+      discontinuitySequenceBase: discontinuitySequenceBase,
+      endlist: endList,
+      playlistType: playlistType,
+      isIFramel: isIFramel,
+      segments: segments,
+      hash: hash,
+      isMasterPlaylist: isMasterPlaylist,
+    );
+  }
+
+  final targetDuration;
+  final int mediaSequenceBase;
+  final int discontinuitySequenceBase;
+  final endlist;
+  final playlistType;
+  final isIFramel;
+  final List segments;
+  final hash;
 }

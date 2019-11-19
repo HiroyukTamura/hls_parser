@@ -115,3 +115,21 @@ class Variant {
   final List closedCaptions;
   final currentRenditions;
 }
+
+class SessionData {
+  SessionData({
+    @required this.id, // required
+    this.value,
+    this.uri,
+    this.language
+  }) {
+    assert (id != null);
+    assert (value != null || uri != null);
+    assert (!(value != null && uri != null), 'SessionData cannot have both value and uri, shoud be either.');
+  }
+
+  final id;
+  final value;
+  final uri;
+  final language;
+}

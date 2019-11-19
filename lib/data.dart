@@ -2,27 +2,26 @@ import 'package:meta/meta.dart';
 import 'util.dart';
 
 class Rendition {
-  Rendition({
-    @required this.type,
-    this.uri,
-    @required this.groupId,
-    this.language,
-    this.assocLanguage,
-    @required this.name,
-    this.isDefault,
-    this.autoselect,
-    this.forced,
-    this.instreamId,
-    this.characteristics,
-    this.channels
-  }) {
+  Rendition(
+      {@required this.type,
+      this.uri,
+      @required this.groupId,
+      this.language,
+      this.assocLanguage,
+      @required this.name,
+      this.isDefault,
+      this.autoselect,
+      this.forced,
+      this.instreamId,
+      this.characteristics,
+      this.channels}) {
     Util.assertNonNull([type, groupId, name]);
     if (type == 'SUBTITLES') {
-      assert (uri != null);
+      assert(uri != null);
     }
     if (type == 'CLOSED-CAPTIONS') {
-      assert (instreamId != null);
-      assert (uri == null);
+      assert(instreamId != null);
+      assert(uri == null);
     }
     if (forced) {
       assert(type == 'CLOSED-CAPTIONS');
@@ -44,7 +43,6 @@ class Rendition {
 }
 
 class Variant {
-
   Variant._({
     this.uri, // required
     this.isIFrameOnly,
@@ -59,27 +57,23 @@ class Variant {
     this.subtitles,
     this.closedCaptions,
     this.currentRenditions,
-  })
-      :
-        assert (uri != true),
-        assert (bandwidth != true);
+  })  : assert(uri != true),
+        assert(bandwidth != true);
 
-
-  factory Variant.build({
-    @required uri, // required
-    isIFrameOnly = false,
-    @required bandwidth, // required
-    averageBandwidth,
-    codecs, // the spec states that CODECS is required but not true in the real world
-    resolution,
-    frameRate,
-    hdcpLevel,
-    List audio,
-    List video,
-    List subtitles,
-    List closedCaptions,
-    List currentRenditions
-  }) {
+  factory Variant.build(
+      {@required uri, // required
+      isIFrameOnly = false,
+      @required bandwidth, // required
+      averageBandwidth,
+      codecs, // the spec states that CODECS is required but not true in the real world
+      resolution,
+      frameRate,
+      hdcpLevel,
+      List audio,
+      List video,
+      List subtitles,
+      List closedCaptions,
+      List currentRenditions}) {
     audio ??= [];
     video ??= [];
     subtitles ??= [];
@@ -98,8 +92,7 @@ class Variant {
         video: video,
         subtitles: subtitles,
         closedCaptions: closedCaptions,
-        currentRenditions: currentRenditions
-    );
+        currentRenditions: currentRenditions);
   }
 
   final uri;
@@ -118,16 +111,15 @@ class Variant {
 }
 
 class SessionData {
-  SessionData({
-    @required this.id, // required
-    this.value,
-    this.uri,
-    this.language
-  }) {
-    assert (id != null);
-    assert (value != null || uri != null);
-    assert (!(value != null && uri !=
-        null), 'SessionData cannot have both value and uri, shoud be either.');
+  SessionData(
+      {@required this.id, // required
+      this.value,
+      this.uri,
+      this.language}) {
+    assert(id != null);
+    assert(value != null || uri != null);
+    assert(!(value != null && uri != null),
+        'SessionData cannot have both value and uri, shoud be either.');
   }
 
   final id;
@@ -136,19 +128,19 @@ class SessionData {
   final language;
 }
 
-
 class Key {
-  Key({
-    @required this.method, // required
-    @required this.uri, // required unless method=NONE
-    this.iv,
-    this.format,
-    this.formatVersion
-  }) {
+  Key(
+      {@required this.method, // required
+      @required this.uri, // required unless method=NONE
+      this.iv,
+      this.format,
+      this.formatVersion}) {
     assert(method != null);
     if (method != 'NONE') {
-      assert (uri != null);
-      assert (!(uri != null || iv != null || format != null ||
+      assert(uri != null);
+      assert(!(uri != null ||
+          iv != null ||
+          format != null ||
           formatVersion != null));
     }
   }
@@ -160,14 +152,12 @@ class Key {
   final formatVersion;
 }
 
-
 class MediaInitializationSection {
-  MediaInitializationSection({
-    @required this.uri, // required
-    this.mimeType,
-    this.byterange
-  }) {
-    assert (uri != null);
+  MediaInitializationSection(
+      {@required this.uri, // required
+      this.mimeType,
+      this.byterange}) {
+    assert(uri != null);
   }
 
   final uri;
@@ -176,34 +166,40 @@ class MediaInitializationSection {
 }
 
 class DateRange {
-  DateRange._({
-    @required this.id,
-    this.classId, // required if endOnNext is true
-    @required this.start,
-    this.end,
-    this.duration,
-    this.plannedDuration,
-    this.endOnNext,
-    this.attributes
-  }) {
+  DateRange._(
+      {@required this.id,
+      this.classId, // required if endOnNext is true
+      @required this.start,
+      this.end,
+      this.duration,
+      this.plannedDuration,
+      this.endOnNext,
+      this.attributes}) {
     assert(id != null);
     assert(start != null);
     if (endOnNext) {
-      assert (classId != null);
+      assert(classId != null);
     }
     if (end != null) {
-      assert (start <= end);
+      assert(start <= end);
     }
     if (duration != null) {
-      assert (duration >= 0);
+      assert(duration >= 0);
     }
     if (plannedDuration != null) {
-      assert (plannedDuration >= 0);
+      assert(plannedDuration >= 0);
     }
   }
 
   factory DateRange.build({
-    @required id, classId, start, end, duration, plannedDuration, endOnNext, attribute,
+    @required id,
+    classId,
+    start,
+    end,
+    duration,
+    plannedDuration,
+    endOnNext,
+    attribute,
   }) {
     return DateRange._(
       id: id,
@@ -213,7 +209,8 @@ class DateRange {
       duration: duration,
       plannedDuration: plannedDuration,
       endOnNext: endOnNext,
-      attributes: attribute,);
+      attributes: attribute,
+    );
   }
 
   final id;
@@ -226,20 +223,18 @@ class DateRange {
   final attributes;
 }
 
-
 class SpliceInfo {
-  SpliceInfo({
-    @required this.type, // required
-    this.duration, // required if the type is 'OUT'
-    this.tagName, // required if the type is 'RAW'
-    this.value
-  }) {
-    assert (type != null);
+  SpliceInfo(
+      {@required this.type, // required
+      this.duration, // required if the type is 'OUT'
+      this.tagName, // required if the type is 'RAW'
+      this.value}) {
+    assert(type != null);
     if (type != 'OUT') {
-      assert (duration != null);
+      assert(duration != null);
     }
     if (type == 'RAW') {
-      assert (tagName != null);
+      assert(tagName != null);
     }
   }
 
@@ -251,8 +246,27 @@ class SpliceInfo {
 
 class Data {
   Data(this.type) {
-    assert (type != null);
+    assert(type != null);
   }
 
   final type;
+}
+
+class Playlist extends Data {
+  Playlist(
+      {@required this.isMasterPlaylist, // required
+      this.uri,
+      this.version,
+      this.independentSegments = false,
+      this.start,
+      this.source})
+      : assert(isMasterPlaylist != null),
+        super('playlist');
+
+  final isMasterPlaylist;
+  final uri;
+  final version;
+  final independentSegments;
+  final start;
+  final source;
 }

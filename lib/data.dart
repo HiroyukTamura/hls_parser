@@ -270,3 +270,22 @@ class Playlist extends Data {
   final start;
   final source;
 }
+
+class MasterPlaylist extends Playlist {
+  MasterPlaylist({
+    isMasterPlaylist,
+    @required this.variants,
+    @required this.currentVariant,
+    @required this.sessionDataList,
+    @required this.sessionKeyList,
+  })  : assert(variants != null),
+        assert(currentVariant != null),
+        assert(sessionDataList != null),
+        assert(sessionKeyList != null),
+        super(isMasterPlaylist: isMasterPlaylist);
+
+  final variants;
+  final currentVariant;
+  final sessionDataList;
+  final sessionKeyList;
+}

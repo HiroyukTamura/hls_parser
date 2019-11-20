@@ -16,7 +16,7 @@ class Rendition {
     this.characteristics,
     this.channels,
   }) {
-    Util.assertNonNull([type, groupId, name]);
+    Util.assertNonNull(<dynamic>[type, groupId, name]);
     if (type == 'SUBTITLES') {
       assert(uri != null);
     }
@@ -49,8 +49,7 @@ class Variant {
     @required this.isIFrameOnly,
     @required this.bandwidth, // required
     @required this.averageBandwidth,
-    @required
-        this.codecs, // the spec states that CODECS is required but not true in the real world
+    @required this.codecs, // the spec states that CODECS is required but not true in the real world
     @required this.resolution,
     @required this.frameRate,
     @required this.hdcpLevel,
@@ -59,23 +58,25 @@ class Variant {
     @required this.subtitles,
     @required this.closedCaptions,
     @required this.currentRenditions,
-  })  : assert(uri != true),
+  })
+      : assert(uri != true),
         assert(bandwidth != true);
 
-  factory Variant.build(
-      {@required uri, // required
-      isIFrameOnly = false,
-      @required bandwidth, // required
-      averageBandwidth,
-      codecs, // the spec states that CODECS is required but not true in the real world
-      resolution,
-      frameRate,
-      hdcpLevel,
-      List audio,
-      List video,
-      List subtitles,
-      List closedCaptions,
-      List currentRenditions}) {
+  factory Variant.build({
+    @required uri, // required
+    isIFrameOnly = false,
+    @required bandwidth, // required
+    averageBandwidth,
+    codecs, // the spec states that CODECS is required but not true in the real world
+    resolution,
+    frameRate,
+    hdcpLevel,
+    List audio,
+    List video,
+    List subtitles,
+    List closedCaptions,
+    List currentRenditions,
+  }) {
     audio ??= [];
     video ??= [];
     subtitles ??= [];
@@ -107,9 +108,9 @@ class Variant {
   final hdcpLevel;
   final List audio;
   final List video;
-  final List subtitles;
+  final List<String> subtitles;
   final List<String> closedCaptions;
-  final currentRenditions;
+  final Map<String, Rendition> currentRenditions;
 }
 
 class SessionData {
@@ -118,12 +119,91 @@ class SessionData {
     this.value,
     this.uri,
     this.language,
-  }) {
-    assert(id != null);
-    assert(value != null || uri != null);
-    assert(!(value != null && uri != null),
-        'SessionData cannot have both value and uri, shoud be either.');
-  }
+  })
+
+  assert
+
+  (
+
+  id
+
+  !=
+
+  null
+
+  )
+
+  ,
+
+  assert
+
+  (
+
+  value
+
+  !=
+
+  null
+
+  ||
+
+  uri
+
+  !=
+
+  null
+
+  )
+
+  ,
+
+  assert
+
+  (
+
+  !
+
+  (
+
+  value
+
+  !=
+
+  null
+
+  &&
+
+  uri
+
+  !=
+
+  null
+
+  )
+
+  ,
+
+  '
+
+  SessionData cannot
+
+  have both
+
+  value and
+
+  uri
+
+  ,
+
+  shoud be
+
+  either
+
+      .
+
+  '
+
+  );
 
   final id;
   final value;
@@ -138,8 +218,7 @@ class Key {
     this.iv,
     this.format,
     this.formatVersion,
-  }) {
-    assert(method != null);
+  }) : assert(method != null) {
     if (method != 'NONE') {
       assert(uri != null);
       assert(!(uri != null ||
@@ -157,12 +236,10 @@ class Key {
 }
 
 class MediaInitializationSection {
-  MediaInitializationSection(
-      {@required this.uri, // required
-      this.mimeType,
-      this.byterange}) {
-    assert(uri != null);
-  }
+  MediaInitializationSection({@required this.uri, // required
+    this.mimeType,
+    this.byterange,}) :
+        assert(uri != null);
 
   final uri;
   final mimeType;
@@ -179,9 +256,9 @@ class DateRange {
     @required this.plannedDuration,
     @required this.endOnNext,
     @required this.attributes,
-  }) {
-    assert(id != null);
-    assert(start != null);
+  })
+      : assert(id != null),
+        assert(start != null) {
     if (endOnNext) {
       assert(classId != null);
     }
@@ -220,10 +297,10 @@ class DateRange {
 
   final id;
   final classId;
-  final start;
-  final end;
-  final duration;
-  final plannedDuration;
+  final double start;
+  final double end;
+  final double duration;
+  final double plannedDuration;
   final bool endOnNext;
   final attributes;
 }
@@ -234,8 +311,7 @@ class SpliceInfo {
     this.duration, // required if the type is 'OUT'
     this.tagName, // required if the type is 'RAW'
     this.value,
-  }) {
-    assert(type != null);
+  }): assert(type != null) {
     if (type != 'OUT') {
       assert(duration != null);
     }
@@ -251,11 +327,10 @@ class SpliceInfo {
 }
 
 class Data {
-  Data(this.type) {
+  Data(this.type) :
     assert(type != null);
-  }
 
-  final type;
+  final String type;
 }
 
 class Playlist extends Data {
@@ -266,13 +341,14 @@ class Playlist extends Data {
     this.independentSegments = false,
     this.start,
     this.source,
-  })  : assert(isMasterPlaylist != null),
+  })
+      : assert(isMasterPlaylist != null),
         super('playlist');
 
-  final isMasterPlaylist;
+  final bool isMasterPlaylist;
   final uri;
   final version;
-  final independentSegments;
+  final bool independentSegments;
   final start;
   final source;
 }
@@ -284,7 +360,8 @@ class MasterPlaylist extends Playlist {
     @required this.currentVariant,
     @required this.sessionDataList,
     @required this.sessionKeyList,
-  })  : assert(variants != null),
+  })
+      : assert(variants != null),
         assert(sessionDataList != null),
         assert(sessionKeyList != null),
         super(isMasterPlaylist: isMasterPlaylist); //todo fix
@@ -320,23 +397,22 @@ class MediaPlaylist extends Playlist {
     @required this.discontinuitySequenceBase,
     @required this.endlist,
     @required this.playlistType,
-    @required this.isIFramel,
+    @required this.isIFrameOnly,
     @required this.segments,
     @required this.hash,
-    @required isMasterPlaylist,
+    @required bool isMasterPlaylist,
   }) : super(isMasterPlaylist: isMasterPlaylist); //todo fix
 
-  factory MediaPlaylist.build(
-      {isMasterPlaylist = false,
-      targetDuration,
-      mediaSequenceBase = 0,
-      discontinuitySequenceBase = 0,
-      endList,
-      playlistType,
-      isIFramel,
-      segments,
-      hash}) {
-    segments ??= [];
+  factory MediaPlaylist.build({bool isMasterPlaylist = false,
+    targetDuration,
+    double mediaSequenceBase = 0,
+    double discontinuitySequenceBase = 0,
+    endList,
+    playlistType,
+    isIFramel,
+    List<Segment> segments,
+    hash}) {
+    segments ??= <Segment>[];
 
     return MediaPlaylist._(
       targetDuration: targetDuration,
@@ -344,20 +420,20 @@ class MediaPlaylist extends Playlist {
       discontinuitySequenceBase: discontinuitySequenceBase,
       endlist: endList,
       playlistType: playlistType,
-      isIFramel: isIFramel,
+      isIFrameOnly: isIFrameOnly,
       segments: segments,
       hash: hash,
       isMasterPlaylist: isMasterPlaylist,
     );
   }
 
-  final targetDuration;
+  final int targetDuration;
   final int mediaSequenceBase;
   final int discontinuitySequenceBase;
-  final endlist;
-  final playlistType;
-  final isIFramel;
-  final List segments;
+  final bool endlist;
+  final String playlistType;
+  final bool isIFrameOnly;
+  final List<Segment> segments;
   final hash;
 }
 
@@ -378,25 +454,26 @@ class Segment extends Data {
     @required this.dateRange,
     @required this.markers,
   }) : super('segment') {
-    Util.assertNonNull([uri, mediaSequenceNumber, discontinuitySequence]);
+    Util.assertNonNull(<dynamic>[uri, mediaSequenceNumber, discontinuitySequence]);
   }
 
   factory Segment.build({
-    @required uri,
-    mimeType,
+    @required String uri,
+    String mimeType,
     data,
-    duration,
-    title,
-    byterange,
-    discontinuity,
-    @required mediaSequenceNumber,
-    @required discontinuitySequence,
+    double duration,
+    String title,
+    ByteRange byterange,
+    bool discontinuity,
+    @required int mediaSequenceNumber,
+    @required int discontinuitySequence,
     key,
     map,
-    programDateTime,
-    dateRange,
-    List markers,
+    DateTime programDateTime,
+    DateRange dateRange,
+    List<Marker> markers,
   }) {
+    // ignore: always_specify_types
     markers ??= [];
     return Segment._(
       uri: uri,
@@ -416,18 +493,30 @@ class Segment extends Data {
     );
   }
 
-  final uri;
-  final mimeType;
+  final String uri;
+  final String mimeType;
   final data;
-  final duration;
-  final title;
-  final byterange;
-  final discontinuity;
-  final mediaSequenceNumber;
-  final discontinuitySequence;
+  final double duration;
+  final String title;
+  final ByteRange byterange;
+  final bool discontinuity;
+  final int mediaSequenceNumber;
+  final int discontinuitySequence;
   final key;
   final map;
-  final programDateTime;
-  final dateRange;
-  final List markers;
+  final DateTime programDateTime;
+  final DateRange dateRange;
+  final List<Marker> markers;
+}
+
+class Marker {
+  String type;
+  String tagName;
+  String value;
+}
+
+{offset: 256, length: 128},
+class ByteRange {
+  int offset;
+  int length;
 }
